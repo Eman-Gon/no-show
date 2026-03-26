@@ -10,12 +10,15 @@ export interface Patient {
   id: string;           // Unique patient identifier (e.g., "p1")
   name: string;         // Full name displayed in the dashboard
   phone: string;        // Phone number Vapi will call (E.164 format ideally)
+  dateOfBirth: string;  // Date of birth (for display / verification)
+  provider: string;     // Assigned doctor or provider name
 }
 
 // Represents a missed appointment and its current resolution status
 export interface Appointment {
   id: string;                        // Unique appointment identifier (e.g., "apt1")
   patientId: string;                 // Foreign key linking to a Patient
+  type: string;                      // Appointment type (e.g., "Annual Physical", "Follow-Up")
   missedAt: string;                  // ISO timestamp of the original missed appointment
   status: AppointmentStatus;         // Current status after the no-show follow-up
   rescheduledTo: string | null;      // ISO timestamp of the new appointment (if rescheduled)

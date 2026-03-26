@@ -4,33 +4,51 @@
 
 import { Patient, Appointment, AvailableSlot } from "./types";
 
+// ─── Clinic Info ───────────────────────────────────────────
+// The clinic identity used across the voice agent and dashboard
+export const CLINIC = {
+  name: "Bayshore Family Medicine",
+  address: "2450 Bayshore Blvd, Suite 310, San Francisco, CA 94134",
+  phone: "+14155550100",
+};
+
 // ─── Patients ──────────────────────────────────────────────
-// Hardcoded patient records simulating a clinic's patient list
+// Realistic patient records for a family medicine practice demo
 export const patients: Patient[] = [
   {
     id: "p1",
-    name: "Sarah Johnson",
-    phone: "+15857975153",   // Team member 1
+    name: "Maria Gonzalez",
+    phone: "+15857975153",
+    dateOfBirth: "1988-04-12",
+    provider: "Dr. Anita Raj",
   },
   {
     id: "p2",
-    name: "Michael Chen",
-    phone: "+14154006707",   // Team member 2
+    name: "David Kim",
+    phone: "+14154006707",
+    dateOfBirth: "1975-11-03",
+    provider: "Dr. Anita Raj",
   },
   {
     id: "p3",
-    name: "Emily Rodriguez",
-    phone: "+15857975153",   // Team member 1
+    name: "Jasmine Okafor",
+    phone: "+15857975153",
+    dateOfBirth: "1992-07-22",
+    provider: "Dr. Michael Torres",
   },
   {
     id: "p4",
-    name: "James Williams",
-    phone: "+14154006707",   // Team member 2
+    name: "Robert Chen",
+    phone: "+14154006707",
+    dateOfBirth: "1960-02-14",
+    provider: "Dr. Michael Torres",
   },
   {
     id: "p5",
-    name: "Priya Patel",
-    phone: "+15857975153",   // Team member 1
+    name: "Aisha Rahman",
+    phone: "+15857975153",
+    dateOfBirth: "1999-09-30",
+    provider: "Dr. Anita Raj",
   },
 ];
 
@@ -41,7 +59,8 @@ export const appointments: Appointment[] = [
   {
     id: "apt1",
     patientId: "p1",
-    missedAt: "2026-03-25T09:00:00Z",   // Missed morning appointment
+    type: "Annual Physical Exam",
+    missedAt: "2026-03-25T09:00:00Z",
     status: "pending",
     rescheduledTo: null,
     callId: null,
@@ -50,6 +69,7 @@ export const appointments: Appointment[] = [
   {
     id: "apt2",
     patientId: "p2",
+    type: "Diabetes Follow-Up",
     missedAt: "2026-03-25T10:30:00Z",
     status: "pending",
     rescheduledTo: null,
@@ -59,6 +79,7 @@ export const appointments: Appointment[] = [
   {
     id: "apt3",
     patientId: "p3",
+    type: "New Patient Consultation",
     missedAt: "2026-03-25T11:00:00Z",
     status: "pending",
     rescheduledTo: null,
@@ -68,6 +89,7 @@ export const appointments: Appointment[] = [
   {
     id: "apt4",
     patientId: "p4",
+    type: "Blood Pressure Check",
     missedAt: "2026-03-25T14:00:00Z",
     status: "pending",
     rescheduledTo: null,
@@ -77,6 +99,7 @@ export const appointments: Appointment[] = [
   {
     id: "apt5",
     patientId: "p5",
+    type: "Prescription Refill Visit",
     missedAt: "2026-03-25T15:30:00Z",
     status: "pending",
     rescheduledTo: null,
@@ -87,22 +110,22 @@ export const appointments: Appointment[] = [
 
 // ─── Available Slots ───────────────────────────────────────
 // Time slots the voice agent will offer to patients for rescheduling.
-// These are the options Maya reads out during the call.
+// Realistic openings across the next few business days.
 export const availableSlots: AvailableSlot[] = [
   {
     id: "slot1",
-    datetime: "2026-03-27T14:00:00Z",   // Thursday 2 PM
-    label: "Thursday at 2:00 PM",
+    datetime: "2026-03-26T14:00:00Z",   // Tomorrow (Thursday) 2 PM
+    label: "tomorrow, Thursday, at 2:00 PM",
   },
   {
     id: "slot2",
-    datetime: "2026-03-28T10:00:00Z",   // Friday 10 AM
+    datetime: "2026-03-27T10:00:00Z",   // Friday 10 AM
     label: "Friday at 10:00 AM",
   },
   {
     id: "slot3",
-    datetime: "2026-03-30T09:00:00Z",   // Monday 9 AM
-    label: "Monday at 9:00 AM",
+    datetime: "2026-03-30T09:00:00Z",   // Next Monday 9 AM
+    label: "next Monday at 9:00 AM",
   },
 ];
 

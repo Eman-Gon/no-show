@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
     const callNumber = phoneOverride || patient.phone;
     const callResult = await createOutboundCall(
       callNumber,
-      patient.name
+      patient.name,
+      appointment.type
     );
 
     // Update the appointment with the call ID and timestamp

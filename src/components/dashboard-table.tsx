@@ -97,13 +97,16 @@ export default function DashboardTable() {
               Patient
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Missed Appointment
+              Appointment Type
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Missed At
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Status
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              New Appointment
+              Rescheduled To
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Action
@@ -118,16 +121,21 @@ export default function DashboardTable() {
               key={apt.id}
               className="hover:bg-gray-50 transition-colors duration-150"
             >
-              {/* Patient name and phone */}
+              {/* Patient name, provider, and phone */}
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-gray-900">
                     {apt.patient.name}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {apt.patient.phone}
+                    {apt.patient.provider}
                   </span>
                 </div>
+              </td>
+
+              {/* Appointment type */}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="text-sm text-gray-900">{apt.type}</span>
               </td>
 
               {/* Original missed appointment time */}

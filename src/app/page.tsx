@@ -46,7 +46,7 @@ export default function Home() {
             {/* Right side: clinic name */}
             <div className="text-right">
               <p className="text-sm font-medium text-gray-700">
-                Sunrise Health Clinic
+                Bayshore Family Medicine
               </p>
               <p className="text-xs text-gray-400">Dashboard</p>
             </div>
