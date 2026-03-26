@@ -47,10 +47,11 @@ export async function POST(request: NextRequest) {
       appointment.type
     );
 
-    // Update the appointment with the call ID and timestamp
+    // Update the appointment with the call ID, timestamp, and "calling" status
     updateAppointment(appointmentId, {
       callId: callResult.id,
       lastCalledAt: new Date().toISOString(),
+      status: "calling",
     });
 
     // Return success with the call details

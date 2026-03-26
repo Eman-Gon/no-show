@@ -1,9 +1,8 @@
 // DashboardTable — The main table showing all missed appointments and their statuses
-// Polls /api/appointments every 3 seconds for real-time updates during the demo.
+// Receives data as props from DashboardShell (parent owns the polling state).
 
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import { Appointment, Patient } from "@/lib/types";
 import StatusBadge from "./status-badge";
 import TriggerCallButton from "./trigger-call-btn";
@@ -11,40 +10,19 @@ import TriggerCallButton from "./trigger-call-btn";
 // Combined type: appointment data joined with patient info
 type AppointmentWithPatient = Appointment & { patient: Patient };
 
-export default function DashboardTable() {
-  const [appointments, setAppointments] = useState<AppointmentWithPatient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface DashboardTableProps {
+  appointments: AppointmentWithPatient[];
+  loading: boolean;
+  error: string | null;
+  onRefresh: () => void;
+}
 
-  // Fetch appointments from the API
-  const fetchAppointments = useCallback(async () => {
-    try {
-      const response = await fetch("/api/appointments");
-      const data = await response.json();
-
-      if (data.success) {
-        setAppointments(data.data);
-        setError(null);
-      } else {
-        setError(data.error || "Failed to fetch appointments");
-      }
-    } catch {
-      setError("Network error — check your connection");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Initial fetch + set up polling interval (every 3 seconds)
-  useEffect(() => {
-    fetchAppointments();
-
-    // Poll for updates so the dashboard reflects call outcomes in near-real-time
-    const interval = setInterval(fetchAppointments, 3000);
-
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, [fetchAppointments]);
+export default function DashboardTable({
+  appointments,
+  loading,
+  error,
+  onRefresh,
+}: DashboardTableProps) {
 
   // Format an ISO date string into a human-readable time (e.g., "9:00 AM")
   function formatTime(isoString: string): string {
@@ -109,6 +87,9 @@ export default function DashboardTable() {
               Rescheduled To
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              SMS
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               Action
             </th>
           </tr>
@@ -155,12 +136,23 @@ export default function DashboardTable() {
                   : "—"}
               </td>
 
+              {/* SMS sent indicator */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                {apt.smsSentAt ? (
+                  <span className="text-green-600" title={`Sent at ${new Date(apt.smsSentAt).toLocaleTimeString()}`}>
+                    ✉️ Sent
+                  </span>
+                ) : (
+                  <span className="text-gray-300">—</span>
+                )}
+              </td>
+
               {/* Call action button */}
               <td className="px-6 py-4 whitespace-nowrap">
                 <TriggerCallButton
                   appointmentId={apt.id}
                   status={apt.status}
-                  onCallTriggered={fetchAppointments}
+                  onCallTriggered={onRefresh}
                 />
               </td>
             </tr>

@@ -3,7 +3,7 @@
 // mock data → API routes → dashboard UI → Vapi webhooks
 
 // Possible states an appointment can be in after a no-show event
-export type AppointmentStatus = "pending" | "rescheduled" | "no-answer" | "declined";
+export type AppointmentStatus = "pending" | "calling" | "rescheduled" | "no-answer" | "declined";
 
 // Represents a patient in the clinic's system
 export interface Patient {
@@ -24,6 +24,7 @@ export interface Appointment {
   rescheduledTo: string | null;      // ISO timestamp of the new appointment (if rescheduled)
   callId: string | null;             // Vapi call ID (set once call is initiated)
   lastCalledAt: string | null;       // ISO timestamp of the most recent call attempt
+  smsSentAt: string | null;          // ISO timestamp of when follow-up SMS was sent
 }
 
 // Available time slots the voice agent can offer to patients

@@ -65,6 +65,7 @@ export const appointments: Appointment[] = [
     rescheduledTo: null,
     callId: null,
     lastCalledAt: null,
+    smsSentAt: null,
   },
   {
     id: "apt2",
@@ -75,6 +76,7 @@ export const appointments: Appointment[] = [
     rescheduledTo: null,
     callId: null,
     lastCalledAt: null,
+    smsSentAt: null,
   },
   {
     id: "apt3",
@@ -85,6 +87,7 @@ export const appointments: Appointment[] = [
     rescheduledTo: null,
     callId: null,
     lastCalledAt: null,
+    smsSentAt: null,
   },
   {
     id: "apt4",
@@ -95,6 +98,7 @@ export const appointments: Appointment[] = [
     rescheduledTo: null,
     callId: null,
     lastCalledAt: null,
+    smsSentAt: null,
   },
   {
     id: "apt5",
@@ -105,6 +109,7 @@ export const appointments: Appointment[] = [
     rescheduledTo: null,
     callId: null,
     lastCalledAt: null,
+    smsSentAt: null,
   },
 ];
 
@@ -153,7 +158,7 @@ export function getAppointmentsWithPatients() {
 // Mutates the in-memory array directly (no DB).
 export function updateAppointment(
   id: string,
-  updates: Partial<Pick<Appointment, "status" | "rescheduledTo" | "callId" | "lastCalledAt">>
+  updates: Partial<Pick<Appointment, "status" | "rescheduledTo" | "callId" | "lastCalledAt" | "smsSentAt">>
 ): Appointment | undefined {
   const apt = appointments.find((a) => a.id === id);
   if (!apt) return undefined;
@@ -163,6 +168,7 @@ export function updateAppointment(
   if (updates.rescheduledTo !== undefined) apt.rescheduledTo = updates.rescheduledTo;
   if (updates.callId !== undefined) apt.callId = updates.callId;
   if (updates.lastCalledAt !== undefined) apt.lastCalledAt = updates.lastCalledAt;
+  if (updates.smsSentAt !== undefined) apt.smsSentAt = updates.smsSentAt;
 
   return apt;
 }

@@ -77,8 +77,10 @@ export default function TriggerCallButton({
   if (!isCallable) {
     return (
       <span className="text-xs text-gray-400 italic">
-        {status === "rescheduled"
-          ? "Done"
+        {status === "calling"
+          ? "📞 In progress…"
+          : status === "rescheduled"
+          ? "✅ Done"
           : status === "no-answer"
           ? "No answer"
           : status === "declined"

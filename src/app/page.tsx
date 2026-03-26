@@ -2,7 +2,7 @@
 // Shows a header with branding, stats summary, and the appointments table.
 // This is a server component that renders the client-side DashboardTable.
 
-import DashboardTable from "@/components/dashboard-table";
+import DashboardShell from "@/components/dashboard-shell";
 
 export default function Home() {
   return (
@@ -67,8 +67,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* The main appointments table (client component) */}
-        <DashboardTable />
+        {/* Stats cards + appointments table (client component) */}
+        <DashboardShell />
 
         {/* ─── ROI Banner ───────────────────────────────────── */}
         <div className="mt-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-6 text-white">

@@ -55,7 +55,9 @@ export async function POST(request: NextRequest) {
                 patient.phone,
                 patient.name,
                 appointment.type
-              ).catch((err) =>
+              ).then(() => {
+                updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
+              }).catch((err) =>
                 console.error("[Plivo SMS] Failed to send no-answer SMS:", err)
               );
             }
@@ -112,7 +114,9 @@ export async function POST(request: NextRequest) {
               rescheduledPatient.name,
               appointment.type,
               selectedSlot.label
-            ).catch((err) =>
+            ).then(() => {
+              updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
+            }).catch((err) =>
               console.error("[Plivo SMS] Failed to send rescheduled SMS:", err)
             );
           }
@@ -134,7 +138,9 @@ export async function POST(request: NextRequest) {
               declinedPatient.phone,
               declinedPatient.name,
               appointment.type
-            ).catch((err) =>
+            ).then(() => {
+              updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
+            }).catch((err) =>
               console.error("[Plivo SMS] Failed to send declined SMS:", err)
             );
           }
@@ -154,7 +160,9 @@ export async function POST(request: NextRequest) {
                 noAnswerPatient.phone,
                 noAnswerPatient.name,
                 appointment.type
-              ).catch((err) =>
+              ).then(() => {
+                updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
+              }).catch((err) =>
                 console.error("[Plivo SMS] Failed to send no-answer SMS:", err)
               );
             }
