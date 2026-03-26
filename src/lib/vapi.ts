@@ -65,6 +65,12 @@ RULES:
 
     // Silence timeout — end call if patient doesn't respond for 30s
     silenceTimeoutSeconds: 30,
+
+    // Webhook URL where Vapi sends call status events
+    // Must be set on the assistant (not in the call payload)
+    serverUrl: process.env.NEXT_PUBLIC_BASE_URL
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/vapi/webhook`
+      : "http://localhost:3000/api/vapi/webhook",
   };
 }
 
@@ -73,8 +79,7 @@ RULES:
 // Returns the Vapi call object (includes call ID for tracking).
 export async function createOutboundCall(
   phoneNumber: string,
-  patientName: string,
-  webhookUrl: string
+  patientName: string
 ): Promise<{ id: string; status: string }> {
   // Read the API key from environment variables (server-side only)
   const apiKey = process.env.VAPI_API_KEY;
@@ -96,13 +101,10 @@ export async function createOutboundCall(
     // The Vapi phone number to call FROM
     phoneNumberId,
 
-    // The patient's phone number to call TO
+    // The patient's phone number to call TO (must be E.164 format: +14155550123)
     customer: {
       number: phoneNumber,
     },
-
-    // Where Vapi should send webhook events (call status updates)
-    serverUrl: webhookUrl,
   };
 
   // Make the API call to Vapi

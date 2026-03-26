@@ -37,16 +37,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build the webhook URL that Vapi will call with status updates.
-    // In production, this would be a public URL. For dev, use ngrok.
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const webhookUrl = `${baseUrl}/api/vapi/webhook`;
-
     // Initiate the outbound call via Vapi API
+    // serverUrl is configured at the assistant level, not in the call payload
     const callResult = await createOutboundCall(
       patient.phone,
-      patient.name,
-      webhookUrl
+      patient.name
     );
 
     // Update the appointment with the call ID and timestamp
