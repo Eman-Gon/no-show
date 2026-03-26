@@ -10,27 +10,27 @@ export const patients: Patient[] = [
   {
     id: "p1",
     name: "Sarah Johnson",
-    phone: "+15551234567",   // Replace with a real number for live demo
+    phone: "+15857975153",   // Team member 1
   },
   {
     id: "p2",
     name: "Michael Chen",
-    phone: "+15559876543",
+    phone: "+14154006707",   // Team member 2
   },
   {
     id: "p3",
     name: "Emily Rodriguez",
-    phone: "+15554567890",
+    phone: "+15857975153",   // Team member 1
   },
   {
     id: "p4",
     name: "James Williams",
-    phone: "+15553216549",
+    phone: "+14154006707",   // Team member 2
   },
   {
     id: "p5",
     name: "Priya Patel",
-    phone: "+15557891234",
+    phone: "+15857975153",   // Team member 1
   },
 ];
 
