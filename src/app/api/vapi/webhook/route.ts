@@ -3,7 +3,8 @@
 // We use these events to update appointment statuses in our mock data.
 
 import { NextRequest, NextResponse } from "next/server";
-import { appointments, updateAppointment, availableSlots } from "@/lib/mock-data";
+import { appointments, updateAppointment, availableSlots, getPatientById } from "@/lib/mock-data";
+import { sendRescheduledSms, sendNoAnswerSms, sendDeclinedSms } from "@/lib/sms";
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +47,18 @@ export async function POST(request: NextRequest) {
             endedReason === "voicemail"
           ) {
             updateAppointment(appointment.id, { status: "no-answer" });
+
+            // Send a follow-up text so the patient knows we tried
+            const patient = getPatientById(appointment.patientId);
+            if (patient) {
+              sendNoAnswerSms(
+                patient.phone,
+                patient.name,
+                appointment.type
+              ).catch((err) =>
+                console.error("[Plivo SMS] Failed to send no-answer SMS:", err)
+              );
+            }
           }
         }
         break;
@@ -90,6 +103,19 @@ export async function POST(request: NextRequest) {
           console.log(
             `[Vapi Webhook] Appointment ${appointment.id} rescheduled to ${selectedSlot.label}`
           );
+
+          // Send confirmation text with the new appointment time
+          const rescheduledPatient = getPatientById(appointment.patientId);
+          if (rescheduledPatient) {
+            sendRescheduledSms(
+              rescheduledPatient.phone,
+              rescheduledPatient.name,
+              appointment.type,
+              selectedSlot.label
+            ).catch((err) =>
+              console.error("[Plivo SMS] Failed to send rescheduled SMS:", err)
+            );
+          }
         } else if (
           fullText.includes("decline") ||
           fullText.includes("no thank") ||
@@ -100,6 +126,18 @@ export async function POST(request: NextRequest) {
           // Patient declined to reschedule
           updateAppointment(appointment.id, { status: "declined" });
           console.log(`[Vapi Webhook] Appointment ${appointment.id} declined`);
+
+          // Send a gentle follow-up text for when they're ready
+          const declinedPatient = getPatientById(appointment.patientId);
+          if (declinedPatient) {
+            sendDeclinedSms(
+              declinedPatient.phone,
+              declinedPatient.name,
+              appointment.type
+            ).catch((err) =>
+              console.error("[Plivo SMS] Failed to send declined SMS:", err)
+            );
+          }
         } else if (appointment.status === "pending") {
           // If we can't determine the outcome, check if the call actually connected
           const endedReason = message.endedReason;
@@ -108,6 +146,18 @@ export async function POST(request: NextRequest) {
             endedReason === "customer-busy"
           ) {
             updateAppointment(appointment.id, { status: "no-answer" });
+
+            // Send follow-up text for unanswered calls detected in report
+            const noAnswerPatient = getPatientById(appointment.patientId);
+            if (noAnswerPatient) {
+              sendNoAnswerSms(
+                noAnswerPatient.phone,
+                noAnswerPatient.name,
+                appointment.type
+              ).catch((err) =>
+                console.error("[Plivo SMS] Failed to send no-answer SMS:", err)
+              );
+            }
           }
           // Otherwise leave as pending for manual review
         }
