@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the request body to get the target appointment ID
     const body = await request.json();
-    const { appointmentId } = body;
+    const { appointmentId, phoneOverride } = body;
 
     // Validate the required field is present
     if (!appointmentId) {
@@ -39,8 +39,10 @@ export async function POST(request: NextRequest) {
 
     // Initiate the outbound call via Vapi API
     // serverUrl is configured at the assistant level, not in the call payload
+    // Use phoneOverride if provided (for demo with real numbers), else use patient's phone
+    const callNumber = phoneOverride || patient.phone;
     const callResult = await createOutboundCall(
-      patient.phone,
+      callNumber,
       patient.name
     );
 
