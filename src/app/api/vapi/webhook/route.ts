@@ -33,12 +33,12 @@ export async function POST(request: NextRequest) {
       // ─── Call Status Updates ───────────────────────────────
       case "status-update": {
         const status = message.status;
-        console.log(`[Vapi Webhook] Call status: ${status}`);
+        console.log(`[Vapi Webhook] 📞 Call status: ${status}`);
 
         // When the call ends, check the reason to determine outcome
         if (status === "ended" && appointment) {
           const endedReason = message.endedReason;
-          console.log(`[Vapi Webhook] Call ended. Reason: ${endedReason}`);
+          console.log(`[Vapi Webhook] 🔚 Call ended. Reason: ${endedReason}`);
 
           // If the call wasn't answered or failed, mark as no-answer
           if (
@@ -50,15 +50,17 @@ export async function POST(request: NextRequest) {
 
             // Send a follow-up text so the patient knows we tried
             const patient = getPatientById(appointment.patientId);
+            console.log(`[Vapi Webhook] 📱 SMS trigger (no-answer) — patient: ${patient?.name || "NOT FOUND"}, phone: ${patient?.phone || "N/A"}`);
             if (patient) {
               sendNoAnswerSms(
                 patient.phone,
                 patient.name,
                 appointment.type
               ).then(() => {
+                console.log(`[Vapi Webhook] ✅ No-answer SMS sent successfully`);
                 updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
               }).catch((err) =>
-                console.error("[Plivo SMS] Failed to send no-answer SMS:", err)
+                console.error("[Plivo SMS] ❌ Failed to send no-answer SMS:", err)
               );
             }
           }
@@ -103,11 +105,12 @@ export async function POST(request: NextRequest) {
             rescheduledTo: selectedSlot.datetime,
           });
           console.log(
-            `[Vapi Webhook] Appointment ${appointment.id} rescheduled to ${selectedSlot.label}`
+            `[Vapi Webhook] ✅ Appointment ${appointment.id} rescheduled to ${selectedSlot.label}`
           );
 
           // Send confirmation text with the new appointment time
           const rescheduledPatient = getPatientById(appointment.patientId);
+          console.log(`[Vapi Webhook] 📱 SMS trigger (rescheduled) — patient: ${rescheduledPatient?.name || "NOT FOUND"}`);
           if (rescheduledPatient) {
             sendRescheduledSms(
               rescheduledPatient.phone,
@@ -115,9 +118,10 @@ export async function POST(request: NextRequest) {
               appointment.type,
               selectedSlot.label
             ).then(() => {
+              console.log(`[Vapi Webhook] ✅ Rescheduled SMS sent successfully`);
               updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
             }).catch((err) =>
-              console.error("[Plivo SMS] Failed to send rescheduled SMS:", err)
+              console.error("[Plivo SMS] ❌ Failed to send rescheduled SMS:", err)
             );
           }
         } else if (
@@ -129,19 +133,21 @@ export async function POST(request: NextRequest) {
         ) {
           // Patient declined to reschedule
           updateAppointment(appointment.id, { status: "declined" });
-          console.log(`[Vapi Webhook] Appointment ${appointment.id} declined`);
+          console.log(`[Vapi Webhook] ❌ Appointment ${appointment.id} declined`);
 
           // Send a gentle follow-up text for when they're ready
           const declinedPatient = getPatientById(appointment.patientId);
+          console.log(`[Vapi Webhook] 📱 SMS trigger (declined) — patient: ${declinedPatient?.name || "NOT FOUND"}`);
           if (declinedPatient) {
             sendDeclinedSms(
               declinedPatient.phone,
               declinedPatient.name,
               appointment.type
             ).then(() => {
+              console.log(`[Vapi Webhook] ✅ Declined SMS sent successfully`);
               updateAppointment(appointment.id, { smsSentAt: new Date().toISOString() });
             }).catch((err) =>
-              console.error("[Plivo SMS] Failed to send declined SMS:", err)
+              console.error("[Plivo SMS] ❌ Failed to send declined SMS:", err)
             );
           }
         } else if (appointment.status === "pending") {

@@ -62,8 +62,13 @@ async function sendSms(to: string, body: string): Promise<void> {
   // The Plivo phone number to send FROM (must be SMS-enabled)
   const fromNumber = process.env.PLIVO_PHONE_NUMBER;
   if (!fromNumber) {
+    console.error("[Plivo SMS] ❌ PLIVO_PHONE_NUMBER env var is NOT set");
     throw new Error("PLIVO_PHONE_NUMBER environment variable is not set");
   }
+
+  const authId = process.env.PLIVO_AUTH_ID;
+  const authToken = process.env.PLIVO_AUTH_TOKEN;
+  console.log(`[Plivo SMS] 📱 Config check — AUTH_ID: ${authId ? authId.substring(0, 6) + "..." : "MISSING"}, AUTH_TOKEN: ${authToken ? "SET" : "MISSING"}, FROM: ${fromNumber}`);
 
   const payload = {
     src: fromNumber,   // Sender — our Plivo number
@@ -71,9 +76,12 @@ async function sendSms(to: string, body: string): Promise<void> {
     text: body,        // The SMS body text
   };
 
-  console.log(`[Plivo SMS] Sending to ${to}: "${body.substring(0, 50)}..."`);
+  const url = getPlivoUrl();
+  console.log(`[Plivo SMS] 🔗 URL: ${url}`);
+  console.log(`[Plivo SMS] 📤 Sending to ${to}`);
+  console.log(`[Plivo SMS] 💬 Message: "${body}"`);
 
-  const response = await fetch(getPlivoUrl(), {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       Authorization: getPlivoAuthHeader(),
@@ -82,9 +90,11 @@ async function sendSms(to: string, body: string): Promise<void> {
     body: JSON.stringify(payload),
   });
 
+  console.log(`[Plivo SMS] 📬 Response status: ${response.status}`);
+
   if (!response.ok) {
     const errorText = await response.text();
-    console.error(`[Plivo SMS] Error ${response.status}: ${errorText}`);
+    console.error(`[Plivo SMS] ❌ Error ${response.status}: ${errorText}`);
     throw new Error(`Plivo SMS failed: ${response.status} ${errorText}`);
   }
 
