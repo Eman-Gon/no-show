@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAppointmentById, getPatientById, updateAppointment } from "@/lib/mock-data";
 import { createOutboundCall } from "@/lib/vapi";
+import { createOutboundCallBland } from "@/lib/bland";
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,15 +38,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initiate the outbound call via Vapi API
-    // serverUrl is configured at the assistant level, not in the call payload
-    // Use phoneOverride if provided (for demo with real numbers), else use patient's phone
+    // Initiate the outbound call — try Vapi first, fall back to Bland if it fails
     const callNumber = phoneOverride || patient.phone;
-    const callResult = await createOutboundCall(
-      callNumber,
-      patient.name,
-      appointment.type
-    );
+    let callResult: { id: string; status: string };
+    let provider = "vapi";
+
+    try {
+      callResult = await createOutboundCall(callNumber, patient.name, appointment.type);
+    } catch (vapiError) {
+      console.warn("Vapi call failed, falling back to Bland:", vapiError);
+      provider = "bland";
+      callResult = await createOutboundCallBland(callNumber, patient.name, appointment.type);
+    }
+
+    console.log(`Call initiated via ${provider} — call ID: ${callResult.id}`);
 
     // Update the appointment with the call ID, timestamp, and "calling" status
     updateAppointment(appointmentId, {

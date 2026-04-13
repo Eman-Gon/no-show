@@ -9,6 +9,12 @@ import { availableSlots, CLINIC } from "./mock-data";
 // Base URL for all Vapi API requests
 const VAPI_API_BASE = "https://api.vapi.ai";
 
+function getVapiPrivateApiKey() {
+  // Prefer an explicitly named private key env var, but keep the original
+  // VAPI_API_KEY fallback so existing setups do not break.
+  return process.env.VAPI_PRIVATE_KEY || process.env.VAPI_API_KEY;
+}
+
 // ─── Assistant Configuration ──────────────────────────────
 // Builds the inline assistant config that defines how the voice agent behaves.
 // This is passed directly in the create-call request (no need for a pre-created assistant).
@@ -90,9 +96,11 @@ export async function createOutboundCall(
   appointmentType: string
 ): Promise<{ id: string; status: string }> {
   // Read the API key from environment variables (server-side only)
-  const apiKey = process.env.VAPI_API_KEY;
+  const apiKey = getVapiPrivateApiKey();
   if (!apiKey) {
-    throw new Error("VAPI_API_KEY environment variable is not set");
+    throw new Error(
+      "Vapi private API key is missing. Set VAPI_PRIVATE_KEY (preferred) or VAPI_API_KEY in .env.local and restart the Next.js server."
+    );
   }
 
   // The phone number ID from your Vapi dashboard (the caller ID)
@@ -128,6 +136,12 @@ export async function createOutboundCall(
   // Handle API errors
   if (!response.ok) {
     const errorBody = await response.text();
+    if (response.status === 401) {
+      throw new Error(
+        "Vapi authentication failed (401). This server route must use your Vapi Private API Key, not the browser/public key. Update VAPI_PRIVATE_KEY (or VAPI_API_KEY) in .env.local, then restart the Next.js server."
+      );
+    }
+
     throw new Error(`Vapi API error (${response.status}): ${errorBody}`);
   }
 
