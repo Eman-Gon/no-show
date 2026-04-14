@@ -46,9 +46,14 @@ export async function POST(request: NextRequest) {
     try {
       callResult = await createOutboundCall(callNumber, patient.name, appointment.type);
     } catch (vapiError) {
-      console.warn("Vapi call failed, falling back to Bland:", vapiError);
-      provider = "bland";
-      callResult = await createOutboundCallBland(callNumber, patient.name, appointment.type);
+      console.warn("Vapi call failed:", vapiError);
+      if (process.env.BLAND_API_KEY) {
+        console.warn("Falling back to Bland...");
+        provider = "bland";
+        callResult = await createOutboundCallBland(callNumber, patient.name, appointment.type);
+      } else {
+        throw vapiError;
+      }
     }
 
     console.log(`Call initiated via ${provider} — call ID: ${callResult.id}`);
